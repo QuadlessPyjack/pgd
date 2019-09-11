@@ -1,0 +1,5 @@
+..\main.cpp(55): Error! E157: col(14) left expression must be integral
+..\main.cpp(55): Note! N717: col(14) left operand type is 'std::ifstream (lvalue)'
+..\main.cpp(55): Note! N718: col(14) right operand type is 'std::basic_string<char,std::char_traits<char>,std::allocator<char>> (lvalue)'
+..\main.cpp(158): Warning! W726: col(1) no reference to formal parameter 'argc'
+..\main.cpp(67): Note! N392: col(14) definition: 'int argc' in 'int main( int, char * * )'

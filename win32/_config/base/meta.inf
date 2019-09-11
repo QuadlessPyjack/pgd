@@ -1,0 +1,13 @@
+[files]
+10
+[listing]
+clean.bat
+git4dos.exe
+git4dos.lk1
+git4dos.map
+git4dos.mk1
+git4dos.sym
+main.err
+main.obj
+test
+test.txt

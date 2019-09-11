@@ -1,0 +1,14 @@
+!define BLANK ""
+C:\work\g4d\main.obj : C:\work\g4d\main.cpp .AUTODEPEND
+ @C:
+ cd C:\work\g4d
+ *wpp main.cpp -i="C:\work\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -&
+ml -xs -xr
+
+C:\work\g4d\git4dos.exe : C:\work\g4d\main.obj .AUTODEPEND
+ @C:
+ cd C:\work\g4d
+ @%write git4dos.lk1 FIL main.obj
+ @%append git4dos.lk1 
+ *wlink name git4dos d all sys dos op m op maxe=25 op q op symf @git4dos.lk1
+

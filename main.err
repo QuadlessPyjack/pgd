@@ -1,0 +1,4 @@
+main.cpp(7): Warning! W726: col(1) no reference to formal parameter 'argc'
+main.cpp(3): Note! N392: col(14) definition: 'int argc' in 'int main( int, char * * )'
+main.cpp(7): Warning! W726: col(1) no reference to formal parameter 'argv'
+main.cpp(3): Note! N392: col(27) definition: 'char * * argv' in 'int main( int, char * * )'

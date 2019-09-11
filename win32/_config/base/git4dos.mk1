@@ -1,0 +1,21 @@
+!define BLANK ""
+C:\work\g4d\win32\main.obj : C:\work\g4d\main.cpp .AUTODEPEND
+ @C:
+ cd C:\work\g4d\win32
+ *wpp386 ..\main.cpp -i="C:\work\WATCOM/h;C:\work\WATCOM/h/nt" -w4 -e25 -zq &
+-od -d2 -6r -bt=nt -fo=.obj -mf -xs -xr
+
+C:\work\g4d\win32\git4dos.exe : C:\work\g4d\win32\main.obj .AUTODEPEND
+ @C:
+ cd C:\work\g4d\win32
+ @%write git4dos.lk1 FIL main.obj
+ @%append git4dos.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b git4dos.imp 
+ @%append git4dos.lk1 LIBR git4dos.imp
+!endif
+!ifneq BLANK ""
+ @%append git4dos.lk1 
+!endif
+ *wlink name git4dos d all sys nt op m op maxe=25 op q op symf @git4dos.lk1
+

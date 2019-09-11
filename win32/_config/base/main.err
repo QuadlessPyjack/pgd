@@ -1,0 +1,2 @@
+..\main.cpp(135): Warning! W726: col(1) no reference to formal parameter 'argc'
+..\main.cpp(45): Note! N392: col(14) definition: 'int argc' in 'int main( int, char * * )'
