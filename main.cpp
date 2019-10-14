@@ -9,9 +9,10 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 
-#define COMMIT_LENGTH 4
+#define COMMIT_LENGTH 5
 
 DIR* getCurrentDirTree(const std::string &path)
 {
@@ -21,7 +22,16 @@ DIR* getCurrentDirTree(const std::string &path)
     return dirp;
 }
 
-int getLastModified(const std::string &filePath)
+struct LastModifiedEntry
+{
+    std::string name;
+    long timestamp;
+};
+
+std::vector<LastModifiedEntry> cwdList;
+std::vector<LastModifiedEntry> commitList;
+
+LastModifiedEntry getLastModified(const std::string &filePath)
 {
     #define YEAR(t)   (((t & 0xFE00) >> 9) + 1980)
     #define MONTH(t)  ((t & 0x01E0) >> 5)
@@ -32,16 +42,22 @@ int getLastModified(const std::string &filePath)
 
     int handle;
     unsigned int date, time;
+    LastModifiedEntry entry;
 
     if (_dos_open(filePath.c_str(), O_RDONLY, &handle) != 0)
     {
-        return -1;
+        entry.name = "";
+        entry.timestamp = -1;
+        return entry;
     }
 
     _dos_getftime(handle, &date, &time);
-    std::cout << filePath.c_str() << " " << DAY(date) << "/" << MONTH(date) << "/" << YEAR(date) << " " << HOUR(time) << ":" << MINUTE(time) << "." << SECOND(time) << '\n';
+    //std::cout << filePath.c_str() << " " << DAY(date) << "/" << MONTH(date) << "/" << YEAR(date) << " " << HOUR(time) << ":" << MINUTE(time) << "." << SECOND(time) << '\n';
 
-    return date;
+    entry.name = filePath;
+    entry.timestamp = date + time;
+
+    return entry;
 }
 
 std::string getCurrentCommit()
@@ -64,11 +80,36 @@ std::string getCurrentCommit()
     return currentCommit;
 }
 
-//struct
-//{
-    //std::string name;
-    //long timestamp;
-//} entry;
+std::vector<LastModifiedEntry> getLastModifiedEntriesInPath(std::string path)
+{
+    std::vector<LastModifiedEntry> entryList;
+    struct dirent* direntry = NULL;
+    DIR* pdir = getCurrentDirTree(path);
+    if (pdir == NULL)
+    {
+        return entryList;
+    }
+
+    while ((direntry = readdir(pdir)) != NULL)
+    {
+        if (!strcmp(direntry->d_name,".")   ||
+            !strcmp(direntry->d_name, "..") ||
+            !strcmp(direntry->d_name,"_config")) continue;
+
+        LastModifiedEntry entry = getLastModified(direntry->d_name);
+        entryList.push_back(entry);
+    }
+    closedir(pdir);
+
+    delete direntry;
+    delete pdir;
+    direntry = 0;
+    pdir = 0;
+
+    std::cout << entryList.size() << "\n";
+
+    return entryList;
+}
 
 int main(int argc, char* argv[])
 {
@@ -79,27 +120,12 @@ int main(int argc, char* argv[])
 
     if (!strcmp(argv[1], "/status"))
     {
-        struct dirent* direntry = NULL;
-        DIR* pdir = getCurrentDirTree(currentPath);
-        if (pdir == NULL)
-        {
-            return 0;
-        }
-
-        while ((direntry = readdir(pdir)) != NULL)
-        {
-            if (!strcmp(direntry->d_name,".")   ||
-                    !strcmp(direntry->d_name, "..") ||
-                    !strcmp(direntry->d_name,"_config")) continue;
-
-            getLastModified(direntry->d_name);
-        }
-        closedir(pdir);
-
-        delete direntry;
-        delete pdir;
-        direntry = 0;
-        pdir = 0;
+        //cwdList = getLastModifiedEntriesInPath(currentPath);
+        currentCommit = getCurrentCommit();
+        std::string currentCommitPath = currentPath + std::string("\\_config\\") + currentCommit;
+        //TODO: trim special chars '\n' '\0' from I\O strings
+        std::cout << currentCommitPath.c_str();
+        commitList = getLastModifiedEntriesInPath(currentCommitPath);
     }
 
     if (!strcmp(argv[1], "/init"))
