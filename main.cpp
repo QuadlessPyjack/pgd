@@ -11,6 +11,8 @@
 #include <string>
 
 
+#define COMMIT_LENGTH 4
+
 DIR* getCurrentDirTree(const std::string &path)
 {
     DIR *dirp;
@@ -52,7 +54,11 @@ std::string getCurrentCommit()
     }
 
     ifconfig.seekg(10);
-    ifconfig >> currentCommit;
+    // workaround because >> operator currently not supported
+    char *rawCurrentCommit = (char*)malloc(COMMIT_LENGTH + 1);
+    ifconfig.read(rawCurrentCommit, COMMIT_LENGTH);
+    currentCommit.assign(rawCurrentCommit);
+    free(rawCurrentCommit);
     ifconfig.close();
 
     return currentCommit;
