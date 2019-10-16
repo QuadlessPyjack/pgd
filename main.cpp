@@ -60,6 +60,34 @@ LastModifiedEntry getLastModified(const std::string &filePath)
     return entry;
 }
 
+char* cleanString(char* const input, unsigned int length)
+{
+    if (input == NULL)
+    {
+        return NULL;
+    }
+
+    char* str = new char[strlen(input)];
+    strcpy(str, input);
+
+    for (unsigned int idx = 0; idx < length; ++idx)
+    {
+        if (input[idx] == '\0' || input[idx] == '\n' || input[idx] == '\r' || input[idx] == ' ')
+        {
+            if (idx == 0)
+            {
+                strcpy(str, &input[1]);
+                continue;
+            }
+
+            if ((idx + 1) >= length) return str;
+            memmove(&str[idx], &input[idx + 1], strlen(input) - 1);
+        }
+    }
+
+    return input;
+}
+
 std::string getCurrentCommit()
 {
     std::string currentCommit = "";
@@ -73,10 +101,14 @@ std::string getCurrentCommit()
     // workaround because >> operator currently not supported
     char *rawCurrentCommit = (char*)malloc(COMMIT_LENGTH + 1);
     ifconfig.read(rawCurrentCommit, COMMIT_LENGTH);
+
+    rawCurrentCommit = cleanString(rawCurrentCommit, COMMIT_LENGTH);
+    std::cout << "raw= " << rawCurrentCommit << '\n';
     currentCommit.assign(rawCurrentCommit);
+
     free(rawCurrentCommit);
     ifconfig.close();
-
+    std::cout << " |" << currentCommit.c_str() << "| ";
     return currentCommit;
 }
 
